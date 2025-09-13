@@ -100,8 +100,10 @@ impl SparseHeader {
             return Err(Error::from(VhdError::InvalidHeaderChecksum));
         }
 
-        let safe_copy = unsafe { &header.parent_unicode_name }; // parent_unicode_name is inside packed struct and requires unsafe block to borrow
-        let parent_name = String::from_utf16_lossy(safe_copy).trim_end_matches('\0').to_string();
+        let parent_unicode_name_copy = header.parent_unicode_name; // copy
+        let parent_name = String::from_utf16_lossy(&parent_unicode_name_copy)
+            .trim_end_matches('\0')
+            .to_string();
 
         Ok(Self {
             data_offset: header.data_offset,

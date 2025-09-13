@@ -99,13 +99,15 @@ fn read_partitions(disk: &impl Disk, header: &Header) -> Result<Vec<PartitionInf
             let offset = raw.first_lba * sector_size as u64;
             let length = (raw.last_lba - raw.first_lba + 1) * sector_size as u64;
 
+            let raw_name_copy = raw.name; // copy the array to a properly aligned local variable
+
             partitions.push(PartitionInfo {
                 id: raw.partition_id.swap_bytes(),
                 kind: raw.partition_type.swap_bytes(),
                 offset,
                 length,
                 flags: raw.flags,
-                name: String::from_utf16_lossy(&raw.name).trim_end_matches('\0').to_string(), // TODO: FromWide trait
+                name: String::from_utf16_lossy(&raw_name_copy).trim_end_matches('\0').to_string(), // TODO: FromWide trait
             });
         }
 
